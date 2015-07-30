@@ -4,8 +4,6 @@ define('AJAX_SCRIPT', true);
 
 require_once(dirname(__FILE__) . '../../../../../../config.php');
 
-echo 'test'; 
-
 //require_login($course, false, $cm);
 $text = required_param('text', PARAM_RAW);
 
