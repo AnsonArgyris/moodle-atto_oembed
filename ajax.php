@@ -9,30 +9,33 @@ echo 'test';
 //require_login($course, false, $cm);
 $text = required_param('text', PARAM_RAW);
 
+
+//suported sites are entered here
 $sites = [
+	'soundcloud' => [
+    	'url1'	=> 'https://soundcloud.com/oembed?url=',
+    	'url2'	=> '&format=json&maxwidth=480&maxheight=270',
+    	'regex'	=> '/(https?:\/\/(www\.)?)(soundcloud\.com)\/(.*?)(.*?)(.*?)/is',
+    	],
+
 	'youtube' => [
     	'url1'	=> 'http://www.youtube.com/oembed?url=',
     	'url2'	=> '&format=json',
     	'regex'	=> '/(https?:\/\/(www\.)?)(youtube\.com|youtu\.be|youtube\.googleapis.com)\/(.*?)(.*?)(.*?)/is',
     	],
-    'soundcloud' => [
-    	'url1'	=> 'https://soundcloud.com/oembed?url=',
-    	'url2'	=> '&format=json&maxwidth=480&maxheight=270',
-    	'regex'	=> '/(https?:\/\/(www\.)?)(soundcloud\.com)\/(.*?)(.*?)(.*?)/is',
-    	],
+    
 ];
 
 foreach ($sites as $site) {
     	if (preg_match($site['regex'], $text)) {
     		$url = $site['url1'].$text.$site['url2'];
-    		$jsonret = filter_oembed_curlcall($url);
-    		$newtext = filter_oembed_vidembed($jsonret);    		
+    		$jsonret = oembed_curlcall($url);
+    		$newtext = oembed_gethtml($jsonret);    		
     		echo $newtext;
 		}
 }
 
-
-function filter_oembed_curlcall($www) {
+function oembed_curlcall($www) {
     $crl = curl_init();
     $timeout = 15;
     curl_setopt ($crl, CURLOPT_URL, $www);
@@ -73,7 +76,7 @@ function filter_oembed_curlcall($www) {
     return $result;
 }
 
-function filter_oembed_vidembed($json, $params = '') {
+function oembed_gethtml($json, $params = '') {
 
     if ($json === null) {
         return '<h3>'. get_string('connection_error', 'filter_oembed') .'</h3>';
