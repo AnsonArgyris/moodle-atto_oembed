@@ -62,9 +62,7 @@ function oembed_json_rewrite($providers){
                                   'regex' => str_replace('www', '(www\.)?)(',str_replace('http://', '/(https?:\/\/', $provider_url)).')\/(.*?)(.*?)(.*?)/is',
                                   'endpoint' => $endpoint_url,
                                   );
-                
-                
-            }
+               }
     return $rexgex;
 }
 
