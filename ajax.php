@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . '../../../../../../config.php');
 $text = required_param('text', PARAM_RAW);
 
 
-//suported sites are entered here
+/**suported sites are entered here
 $sites = [
 	'soundcloud' => [
     	'url1'	=> 'https://soundcloud.com/oembed?url=',
@@ -22,15 +22,50 @@ $sites = [
     	'regex'	=> '/(https?:\/\/(www\.)?)(youtube\.com|youtu\.be|youtube\.googleapis.com)\/(.*?)(.*?)(.*?)/is',
     	],
     
-];
+];*/
 
-foreach ($sites as $site) {
+$www ='http://oembed.com/providers.json';
+
+$providers = oembed_curlcall($www);
+
+$sites = oembed_json_rewrite($providers);
+
+$url2 = '&format=json';
+
+
+foreach ($sites[53] as $site) {
     	if (preg_match($site['regex'], $text)) {
-    		$url = $site['url1'].$text.$site['url2'];
+    		$url = $site['endpoint'].'?url='.$text.$url2;
     		$jsonret = oembed_curlcall($url);
     		$newtext = oembed_gethtml($jsonret);    		
-    		echo $newtext;
+    		//echo $newtext;
+            echo $url;
+            echo 'test';
 		}
+        else{
+            echo 'he is dead jim!';
+            var_dump($sites);
+        }
+}
+
+function oembed_json_rewrite($providers){
+    //$provider = $providers;
+    foreach ($providers as $provider) {
+                $provider_url = $provider["provider_url"];
+
+                foreach ($provider['endpoints'] as $endpoints) {
+                    $endpoint_url = $endpoints['url'];
+                    //return $endpoint_url;
+                }
+
+                $rexgex[] = array('provider_name'=>$provider['provider_name'],
+                                  'regex' => str_replace('www', '(www\.)?)(',str_replace('http://', '/(https?:\/\/', $provider_url)).')\/(.*?)(.*?)(.*?)/is',
+                                  'endpoint' => $endpoint_url,
+                                  );
+                
+                
+            }
+    return $rexgex;
 }
 
 function oembed_curlcall($www) {
