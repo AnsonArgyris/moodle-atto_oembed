@@ -30,40 +30,30 @@ $providers = oembed_curlcall($www);
 
 $sites = oembed_json_rewrite($providers);
 
-$url2 = '&format=json';
+$oembed = check_link($sites,$text);
+
+echo $oembed;
+//var_dump($sites);
+//echo 'damn';
 
 
-foreach ($sites[53] as $site) {
-    	if (preg_match($site['regex'], $text)) {
-    		$url = $site['endpoint'].'?url='.$text.$url2;
-    		$jsonret = oembed_curlcall($url);
-    		$newtext = oembed_gethtml($jsonret);    		
-    		//echo $newtext;
-            echo $url;
-            echo 'test';
-		}
-        else{
-            echo 'he is dead jim!';
-            var_dump($sites);
-        }
+function check_link($sites,$text){
+    $url2 = '&format=json';
+    foreach ($sites as $site) {
+        foreach ($site['regex'] as $regex) {
+        # code...
+            //echo $regex;
+            if (preg_match($regex, $text)) {
+                $url = $site['endpoint'].'?url='.$text.$url2;
+                echo $url;
+                $jsonret = oembed_curlcall($url);
+                echo $jsonret;
+                $newtext = oembed_gethtml($jsonret);            
+                echo $newtext;
+            }
+    }
 }
 
-function oembed_json_rewrite($providers){
-    //$provider = $providers;
-    foreach ($providers as $provider) {
-                $provider_url = $provider["provider_url"];
-
-                foreach ($provider['endpoints'] as $endpoints) {
-                    $endpoint_url = $endpoints['url'];
-                    //return $endpoint_url;
-                }
-
-                $rexgex[] = array('provider_name'=>$provider['provider_name'],
-                                  'regex' => str_replace('www', '(www\.)?)(',str_replace('http://', '/(https?:\/\/', $provider_url)).')\/(.*?)(.*?)(.*?)/is',
-                                  'endpoint' => $endpoint_url,
-                                  );
-               }
-    return $rexgex;
 }
 
 function oembed_curlcall($www) {
@@ -105,6 +95,48 @@ function oembed_curlcall($www) {
     curl_close($crl);
     $result = json_decode($ret, true);
     return $result;
+}
+
+function oembed_json_rewrite($providers){
+    //$provider = $providers;
+    foreach ($providers as $provider) {
+                $provider_url = $provider["provider_url"];
+
+                foreach ($provider['endpoints'] as $endpoints) {
+                    $endpoint_scheme = $endpoints['schemes'];
+                    $endpoint_url = $endpoints['url'];
+                    //return $endpoint_url;
+                }
+
+                $rexgex[] = array('provider_name'=>$provider['provider_name'],
+                                  'regex' => create_regex_from_scheme($endpoints['schemes']),
+                                  'endpoint' => $endpoint_url,
+                                  );
+                
+                
+            }
+    return $rexgex;
+}
+
+function create_regex_from_scheme($schemes){
+
+    foreach ($schemes as $scheme) {
+
+        $url1 = preg_split('/(https?:\/\/)/', $scheme);
+        $url2 = preg_split('/\//', $url1[1]);
+        unset($regex_array);
+        foreach ($url2 as $url) {
+            $find = ['.','*'];
+            $replace =['\.','.*?'];
+            $url = str_replace($find, $replace, $url);
+            $regex_array[] = '('.$url.')';
+        }
+
+        $regex[] = '/(https?:\/\/)'.implode('\/', $regex_array).'/'; 
+
+    }
+
+     return $regex;
 }
 
 function oembed_gethtml($json, $params = '') {
