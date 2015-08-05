@@ -102,20 +102,31 @@ function oembed_json_rewrite($providers){
     foreach ($providers as $provider) {
                 $provider_url = $provider["provider_url"];
 
-                foreach ($provider['endpoints'] as $endpoints) {
-                    $endpoint_scheme = $endpoints['schemes'];
-                    $endpoint_url = $endpoints['url'];
-                    //return $endpoint_url;
+                $endpoints = $provider['endpoints'];
+                $endpoints_array = $endpoints[0];
+                $endpoint_url = $endpoints_array['url'];
+
+                $endpoint_url = str_replace('{format}', 'json', $endpoint_url);
+
+
+            // check if schemes are definded for this provider
+            // if not take the provider url for creating a regex
+
+                if (array_key_exists('schemes', $endpoints_array)){
+                    $regex_schemes = $endpoints_array['schemes'];
+                }
+                else {
+                    $regex_schemes = array($provider_url);
                 }
 
-                $rexgex[] = array('provider_name'=>$provider['provider_name'],
-                                  'regex' => create_regex_from_scheme($endpoints['schemes']),
-                                  'endpoint' => $endpoint_url,
+                $provider_export_array[] = array('provider_name'=>$provider['provider_name'],
+                                                 'regex' => create_regex_from_scheme($regex_schemes),
+                                                 'endpoint' => $endpoint_url,
                                   );
                 
                 
             }
-    return $rexgex;
+    return $provider_export_array;
 }
 
 function create_regex_from_scheme($schemes){
