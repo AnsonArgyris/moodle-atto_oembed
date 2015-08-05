@@ -7,23 +7,6 @@ require_once(dirname(__FILE__) . '../../../../../../config.php');
 //require_login($course, false, $cm);
 $text = required_param('text', PARAM_RAW);
 
-
-/**suported sites are entered here
-$sites = [
-	'soundcloud' => [
-    	'url1'	=> 'https://soundcloud.com/oembed?url=',
-    	'url2'	=> '&format=json&maxwidth=480&maxheight=270',
-    	'regex'	=> '/(https?:\/\/(www\.)?)(soundcloud\.com)\/(.*?)(.*?)(.*?)/is',
-    	],
-
-	'youtube' => [
-    	'url1'	=> 'http://www.youtube.com/oembed?url=',
-    	'url2'	=> '&format=json',
-    	'regex'	=> '/(https?:\/\/(www\.)?)(youtube\.com|youtu\.be|youtube\.googleapis.com)\/(.*?)(.*?)(.*?)/is',
-    	],
-    
-];*/
-
 $www ='http://oembed.com/providers.json';
 
 $providers = oembed_curlcall($www);
@@ -33,27 +16,22 @@ $sites = oembed_json_rewrite($providers);
 $oembed = check_link($sites,$text);
 
 echo $oembed;
-//var_dump($sites);
-//echo 'damn';
-
 
 function check_link($sites,$text){
     $url2 = '&format=json';
     foreach ($sites as $site) {
         foreach ($site['regex'] as $regex) {
-        # code...
-            //echo $regex;
+        
             if (preg_match($regex, $text)) {
                 $url = $site['endpoint'].'?url='.$text.$url2;
-                echo $url;
+                
                 $jsonret = oembed_curlcall($url);
-                echo $jsonret;
+                
                 $newtext = oembed_gethtml($jsonret);            
-                echo $newtext;
+                return $newtext;
             }
+        }
     }
-}
-
 }
 
 function oembed_curlcall($www) {
@@ -98,7 +76,7 @@ function oembed_curlcall($www) {
 }
 
 function oembed_json_rewrite($providers){
-    //$provider = $providers;
+    
     foreach ($providers as $provider) {
                 $provider_url = $provider["provider_url"];
 
