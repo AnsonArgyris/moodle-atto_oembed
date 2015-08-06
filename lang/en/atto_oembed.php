@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['error:notloggedin'] = 'Not logged in to Moodle';
+$string['error:noproviders'] = 'No oembed providers could be found';
 $string['createoembed'] = 'Create oembed';
 $string['pluginname'] = 'oembed (Atto)';
 $string['settings'] = 'oembed (Atto)';

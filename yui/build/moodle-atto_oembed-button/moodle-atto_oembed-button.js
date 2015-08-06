@@ -173,7 +173,7 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
 
         var MEDIAURL = this._form.one(SELECTORS.MEDIAURL);
 
-        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax.php';
+        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax2.php';
         var params = {
             sesskey: M.cfg.sesskey,
             //contextid: this.get('contextid'),
@@ -181,27 +181,45 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
             text: MEDIAURL.get('value')
         };
 
-        preview = Y.io(url, {
+        var self = this;
+
+        var process_resp = function (respobj) {
+            // If no file is there to insert, don't do it.
+            //if (!MEDIAURL.get('value')){
+            //    return;
+            //}
+
+            if (!respobj.success) {
+                // TODO - nice localised error message required.
+                alert ('Failed to do oembed');
+            }
+
+            self.editor.focus();
+            //this.get('host').insertContentAtFocusPoint(MEDIAURL.get('value'));
+            //this.get('host').insertContentAtFocusPoint(redirURL);
+            self.get('host').insertContentAtFocusPoint(respobj.htmloutput);
+            self.markUpdated();
+        };
+
+        var preview = Y.io(url, {
             sync: true,
             data: params,
-            method: 'POST'
+            method: 'POST',
+            on : {
+                success: function (tx, r) {
+                    var respobj = {};
+                    try {
+                        respobj = Y.JSON.parse(r.responseText);
+                    }
+                    catch (e) {
+                        //TODO - do something nice with this.
+                        alert("JSON Parse failed!");
+                        return;
+                    }
+                    process_resp(respobj);
+                }
+            }
         });
-        
-        if (preview.status === 200) {
-            content = preview.responseText;
-        }
-        
-
-        // If no file is there to insert, don't do it.
-        //if (!MEDIAURL.get('value')){
-        //    return;
-        //}
-
-        this.editor.focus();
-        //this.get('host').insertContentAtFocusPoint(MEDIAURL.get('value'));
-        //this.get('host').insertContentAtFocusPoint(redirURL);
-        this.get('host').insertContentAtFocusPoint(content);
-        this.markUpdated();
 
     }
 }, { ATTRS: {
