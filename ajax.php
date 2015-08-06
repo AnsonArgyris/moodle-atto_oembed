@@ -24,7 +24,7 @@ function check_link($sites,$text){
         
             if (preg_match($regex, $text)) {
                 $url = $site['endpoint'].'?url='.$text.$url2;
-                
+                // return json object
                 $jsonret = oembed_curlcall($url);
                 
                 $newtext = oembed_gethtml($jsonret);            
@@ -110,6 +110,9 @@ function oembed_json_rewrite($providers){
 function create_regex_from_scheme($schemes){
 
     foreach ($schemes as $scheme) {
+
+        //parse url
+        //put things in a class
 
         $url1 = preg_split('/(https?:\/\/)/', $scheme);
         $url2 = preg_split('/\//', $url1[1]);
