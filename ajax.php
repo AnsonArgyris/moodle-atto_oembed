@@ -4,7 +4,6 @@ define('AJAX_SCRIPT', true);
 
 require_once(dirname(__FILE__) . '../../../../../../config.php');
 
-//require_login($course, false, $cm);
 $text = required_param('text', PARAM_RAW);
 
 $www ='http://oembed.com/providers.json';
@@ -126,20 +125,4 @@ function create_regex_from_scheme($schemes){
     }
 
      return $regex;
-}
-
-function oembed_gethtml($json, $params = '') {
-
-    if ($json === null) {
-        return '<h3>'. get_string('connection_error', 'filter_oembed') .'</h3>';
-    }
-
-    $embed = $json['html'];
-
-    if ($params != ''){
-        $embed = str_replace('?feature=oembed', '?feature=oembed'.htmlspecialchars($params), $embed );
-    }
-
-    $embedcode = $embed;
-    return $embedcode;
 }
