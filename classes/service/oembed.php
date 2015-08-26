@@ -13,6 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Atto text editor integration version file.
+ *
+ * @package    atto_oembed
+ * @copyright  Erich Wappis, Guy Thomas
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace atto_oembed\service;
 
@@ -62,10 +69,17 @@ class oembed {
         }
     }
 
+    /**
+     * Get the media url from the atto dialog window
+     */
     protected function set_params() {
         $this->text = required_param('text', PARAM_RAW);
     }
 
+    /**
+     * Get the latest providerlist from http://oembed.com/providers.json
+     * If connection fails, take local list
+     */
     protected function get_providers() {
         $www ='http://oembed.com/providers.json';
         $crl = curl_init();
@@ -101,6 +115,10 @@ class oembed {
         return $providers;
     }
 
+    
+    /**
+     * Check if the provided url matches any supported content providers
+     */
     protected function get_sites() {
 
         $sites = [];
@@ -115,8 +133,8 @@ class oembed {
             $endpointurl = str_replace('{format}', 'json', $endpointurl);
 
 
-            // check if schemes are definded for this provider
-            // if not take the provider url for creating a regex
+            // Check if schemes are definded for this provider
+            // If not take the provider url for creating a regex
 
             if (array_key_exists('schemes', $endpointsarr)){
                 $regexschemes = $endpointsarr['schemes'];
@@ -135,6 +153,10 @@ class oembed {
         return $sites;
     }
 
+    /**
+     * Create regular expressions from the providers list to check
+     * for supported providers
+     */
     protected function create_regex_from_scheme($schemes){
 
         foreach ($schemes as $scheme) {
@@ -156,6 +178,10 @@ class oembed {
         return $regex;
     }
 
+    /**
+     * Get the actual json from content provider
+     */
+    
     protected function oembed_curlcall($www) {
         $crl = curl_init();
         $timeout = 15;
