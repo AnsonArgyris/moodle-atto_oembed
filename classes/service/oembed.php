@@ -32,6 +32,10 @@ class oembed {
 
     protected $htmloutput = '';
 
+    protected $providerjson = '';
+
+    protected $providerurl =  '';
+
 
     /**
      * Constructor - protected singeton.
@@ -189,14 +193,20 @@ class oembed {
         }
 
         curl_close($crl);
+        
+        $this->providerurl = $www;
+        $this->providerjson = $ret;
         $result = json_decode($ret, true);
+
         return $result;
     }
 
     protected function oembed_gethtml($json, $params = '') {
 
         if ($json === null) {
-            return '<h3>'. get_string('connection_error', 'filter_oembed') .'</h3>';
+            //return '<h3>'. get_string('connection_error', 'filter_oembed') .'</h3>';
+            $this->warnings[] = get_string('connection_error', 'filter_oembed');
+            return '';
         }
 
         $embed = $json['html'];
@@ -240,7 +250,9 @@ class oembed {
         $output = (object) [
             'success' => $this->success,
             'warnings' => $this->warnings,
-            'htmloutput' => $this->htmloutput
+            'htmloutput' => $this->htmloutput,
+            'providerjson' => $this->providerjson,
+            'providerurl' => $this->providerurl
         ];
         return $output;
     }
