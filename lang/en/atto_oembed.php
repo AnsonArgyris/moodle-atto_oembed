@@ -33,6 +33,6 @@ $string['nothingtoinsert'] = 'Nothing to insert!';
 $string['dialogtitle'] = 'Enter Preferences';
 $string['insert'] = 'Insert';
 $string['cancel'] = 'Cancel';
-$string['enterflavor'] = 'Enter Ice Cream Flavor';
+$string['defaulttext'] = 'Enter URL of media here';
 $string['defaultflavor'] = 'Default Ice Cream Flavor';
 $string['oembed:visible'] = 'Visible';

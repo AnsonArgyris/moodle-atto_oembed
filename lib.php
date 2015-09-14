@@ -34,9 +34,9 @@ function atto_oembed_strings_for_js() {
 
     $PAGE->requires->strings_for_js(array('insert',
                                           'cancel',
-                                          'enterflavor',
+                                          'defaulttext',
                                           'dialogtitle'),
-                                    'atto_oembed');
+                                    	  'atto_oembed');
 }
 
 /**
