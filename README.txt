@@ -16,6 +16,6 @@ It is available at GitHub https://github.com/MSOpenTech/moodle-filter_oembed.
 
 Many thanks for that!
 
-My biggest thanks go to Guy Thomas for his endless help and inspiration for this plugin.
+My biggest thanks go to Guy Thomas from Moodlerooms for his endless help and inspiration for this plugin.
 
 More documentation coming soon!
