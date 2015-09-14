@@ -85,10 +85,9 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
     },
 
     /**
-     * Get the id of the flavor control where we store the ice cream flavor
      *
      * @method _getMEDIAURLName
-     * @return {String} the name/id of the flavor form field
+     * @return {String} the name/id of the mediaurl form field
      * @private
      */
     _getMEDIAURLName: function(){
@@ -145,7 +144,7 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
                 CSS: CSS,
                 MEDIAURL: MEDIAURL,
                 component: COMPONENTNAME,
-                defaultflavor: this.get('defaultflavor'),
+                defaultmediatext: this.get('defaulttext'),
                 clickedicon: clickedicon
             }));
 
@@ -174,7 +173,6 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
         var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax2.php';
         var params = {
             sesskey: M.cfg.sesskey,
-            //contextid: this.get('contextid'),
             action: 'filtertext',
             text: MEDIAURL.get('value')
         };
@@ -182,20 +180,14 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
         var self = this;
 
         var process_resp = function (respobj) {
-            // If no file is there to insert, don't do it.
-            //if (!MEDIAURL.get('value')){
-            //    Y.log('No flavor control or value could be found.', 'warn', LOGNAME);
-            //    return;
-            //}
-
+        
             if (!respobj.success) {
                 // TODO - nice localised error message required.
                 alert ('Failed to do oembed');
             }
 
             self.editor.focus();
-            //this.get('host').insertContentAtFocusPoint(MEDIAURL.get('value'));
-            //this.get('host').insertContentAtFocusPoint(redirURL);
+            
             self.get('host').insertContentAtFocusPoint(respobj.htmloutput);
             self.markUpdated();
         };
