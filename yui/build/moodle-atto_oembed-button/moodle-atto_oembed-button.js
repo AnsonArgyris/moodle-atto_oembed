@@ -15,9 +15,11 @@ YUI.add('moodle-atto_oembed-button', function (Y, NAME) {
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
+/**
+ * Atto text editor integration version file.
+ *
  * @package    atto_oembed
- * @copyright  COPYRIGHTINFO
+ * @copyright  Erich M. Wappis
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -172,7 +174,7 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
 
         var MEDIAURL = this._form.one(SELECTORS.MEDIAURL);
 
-        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax2.php';
+        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax.php';
         var params = {
             sesskey: M.cfg.sesskey,
             action: 'filtertext',

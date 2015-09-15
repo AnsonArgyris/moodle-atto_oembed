@@ -172,7 +172,7 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
 
         var MEDIAURL = this._form.one(SELECTORS.MEDIAURL);
 
-        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax2.php';
+        var url = M.cfg.wwwroot + '/lib/editor/atto/plugins/oembed/ajax.php';
         var params = {
             sesskey: M.cfg.sesskey,
             action: 'filtertext',
