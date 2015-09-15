@@ -17,6 +17,6 @@ Many thanks for that!
 
 My biggest thanks go to Guy Thomas from Moodlerooms for his endless help and inspiration for this plugin.
 
-I would also like to thank Miriam Kunst (University of applied Sciences Lübeck) for designing the icon and also the organizers of the Moodle DevCamp 2015 in Vienna.
+I would also like to thank Miriam Kunst (University of Applied Sciences Lübeck) for designing the icon and also the organizers of the Moodle DevCamp 2015 in Vienna.
 
 More documentation coming soon!
