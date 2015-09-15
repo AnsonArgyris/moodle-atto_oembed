@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * oembed settings.
+ * Atto text editor integration version file.
  *
- * @package   atto_oembed
- * @copyright COPYRIGHTINFO
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    atto_oembed
+ * @copyright  Erich M. Wappis
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 

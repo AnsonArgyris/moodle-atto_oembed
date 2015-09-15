@@ -18,7 +18,7 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  COPYRIGHTINFO
+ * @copyright  Erich Wappis
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

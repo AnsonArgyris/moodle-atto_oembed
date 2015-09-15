@@ -13,9 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
+/**
+ * Atto text editor integration version file.
+ *
  * @package    atto_oembed
- * @copyright  COPYRIGHTINFO
+ * @copyright  Erich M. Wappis
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
