@@ -52,10 +52,10 @@ var TEMPLATE = '' +
     '<form class="atto_form">' +
         '<div id="{{elementid}}_{{innerform}}" class="mdl-align">' +
             '<label for="{{elementid}}_{{MEDIAURL}}">{{get_string "enterurl" component}}</label>' +
-            '<input class="{{CSS.MEDIAURL}} id="{{elementid}}_{{MEDIAURL}}" name="{{elementid}}_{{MEDIAURL}}" value="{}" />' +
+            '<input class="{{CSS.MEDIAURL}} id="{{elementid}}_{{MEDIAURL}}" name="{{elementid}}_{{MEDIAURL}}" value="" />' +
             '<button class="{{CSS.INPUTSUBMIT}}">{{get_string "insert" component}}</button>' +
         '</div>' +
-        'icon: {{clickedicon}}'  +
+        /**'icon: {{clickedicon}}'  +*/
     '</form>';
 
 
