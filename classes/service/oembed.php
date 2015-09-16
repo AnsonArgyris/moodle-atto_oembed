@@ -26,6 +26,8 @@ namespace atto_oembed\service;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir.'/filelib.php');
+
 class oembed {
 
     protected $success = false;
@@ -81,38 +83,28 @@ class oembed {
      * Get the latest providerlist from http://oembed.com/providers.json
      * If connection fails, take local list
      */
-    protected function get_providers() {
+protected function get_providers() {
         $www ='http://oembed.com/providers.json';
-        $crl = curl_init();
+
         $timeout = 15;
         $providers = [];
-        curl_setopt ($crl, CURLOPT_URL, $www);
-        curl_setopt ($crl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($crl, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt ($crl, CURLOPT_SSL_VERIFYPEER, false);
 
-        if (!curl_errno($crl)) {
-            $ret = curl_exec($crl);
+        $ret = download_file_content($www, null, null, true, 300, 20, false, NULL, false);
+
+        if ($ret->status == '200') {
+            $ret = $ret->results;
         } else {
-            $ret = false;
-        }
-
-        // Check if curl call fails.
-        if ($ret === false) {
-            // Log warning.
-            $this->warnings[] = 'Failed to load providers from '.$www.' falling back to local version. (curl error '.curl_error($crl).')';
-
-            // @todo - use most recently cached version if available.
-
-            // Use local providers file.
+            $this->warnings[] = 'Failed to load providers from '.$www.' falling back to local version.';
             $ret = file_get_contents(__DIR__.'/../../providers.json');
-        }
+        }        
 
-        curl_close($crl);
+        
         $providers = json_decode($ret, true);
+        
         if (empty($providers)) {
             throw new \moodle_exception('error:noproviders', 'atto_oembed', '');
         }
+              
         return $providers;
     }
 
@@ -184,46 +176,12 @@ class oembed {
      */
     
     protected function oembed_curlcall($www) {
-        $crl = curl_init();
-        $timeout = 15;
-        curl_setopt ($crl, CURLOPT_URL, $www);
-        curl_setopt ($crl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($crl, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt ($crl, CURLOPT_SSL_VERIFYPEER, false);
-        $ret = curl_exec($crl);
-
-        // Check if curl call fails.
-        if ($ret === false) {
-            // Check if error is due to network connection.
-            if (in_array(curl_errno($crl), array('6', '7', '28'))) {
-
-                // Try curl call for 3 times pausing 0.5 sec.
-                for ($i = 0; $i < 3; $i++) {
-                    $ret = curl_exec($crl);
-
-                    // If we get proper response, break the loop.
-                    if ($ret !== false) {
-                        break;
-                    }
-
-                    usleep(500000);
-                }
-
-                // If still curl call failing, return null.
-                if ($ret === false) {
-                    return null;
-                }
-
-            } else {
-                return null;
-            }
-        }
-
-        curl_close($crl);
+        
+        $ret = download_file_content($www, null, null, true, 300, 20, false, NULL, false);
         
         $this->providerurl = $www;
-        $this->providerjson = $ret;
-        $result = json_decode($ret, true);
+        $this->providerjson = $ret->results;
+        $result = json_decode($ret->results, true);
 
         return $result;
     }
