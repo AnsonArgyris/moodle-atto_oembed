@@ -107,7 +107,7 @@ class oembed {
      * Get the latest providerlist from http://oembed.com/providers.json
      * If connection fails, take local list
      */
-protected function get_providers() {
+    protected function get_providers() {
         $www ='http://oembed.com/providers.json';
 
         $timeout = 15;
