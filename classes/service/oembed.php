@@ -30,20 +30,44 @@ require_once($CFG->libdir.'/filelib.php');
 
 class oembed {
 
+    /**
+     * @var bool
+     */
     protected $success = false;
 
+    /**
+     * @var string
+     */
     protected $text = '';
 
+    /**
+     * @var array
+     */
     protected $warnings = [];
 
+    /**
+     * @var array|mixed
+     */
     protected $providers = [];
 
+    /*
+     * @var array
+     */
     protected $sites = [];
 
+    /**
+     * @var mixed|string
+     */
     protected $htmloutput = '';
 
+    /**
+     * @var string
+     */
     protected $providerjson = '';
 
+    /**
+     * @var string
+     */
     protected $providerurl =  '';
 
 
@@ -111,6 +135,8 @@ protected function get_providers() {
     
     /**
      * Check if the provided url matches any supported content providers
+     *
+     * @return array
      */
     protected function get_sites() {
 
@@ -149,8 +175,10 @@ protected function get_providers() {
     /**
      * Create regular expressions from the providers list to check
      * for supported providers
+     *
+     * @param array $scehmes
      */
-    protected function create_regex_from_scheme($schemes){
+    protected function create_regex_from_scheme(Array $schemes){
 
         foreach ($schemes as $scheme) {
 
@@ -173,8 +201,10 @@ protected function get_providers() {
 
     /**
      * Get the actual json from content provider
+     *
+     * @param string $www
+     * @return string
      */
-    
     protected function oembed_curlcall($www) {
         
         $ret = download_file_content($www, null, null, true, 300, 20, false, NULL, false);
@@ -186,6 +216,14 @@ protected function get_providers() {
         return $result;
     }
 
+    /**
+     * Get oembed html.
+     *
+     * @param string $json
+     * @param string $params
+     * @return string
+     * @throws \coding_exception
+     */
     protected function oembed_gethtml($json, $params = '') {
 
         if ($json === null) {
@@ -204,7 +242,14 @@ protected function get_providers() {
         return $embedcode;
     }
 
-    protected function html_output($sites, $text){
+    /**
+     * Get html output
+     *
+     * @param array $sites
+     * @param string $text
+     * @return string
+     */
+    protected function html_output(Array $sites, $text){
         $url2 = '&format=json';
         foreach ($sites as $site) {
             foreach ($site['regex'] as $regex) {
@@ -219,6 +264,7 @@ protected function get_providers() {
     }
 
     /**
+     * Singleton
      *
      * @return mixed
      */
@@ -231,6 +277,11 @@ protected function get_providers() {
         }
     }
 
+    /**
+     * Get output object
+     *
+     * @return object
+     */
     protected function get_output_obj(){
         $output = (object) [
             'success' => $this->success,

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Initialise this plugin
- * @param string $elementid
+ *
  */
 function atto_oembed_strings_for_js() {
     global $PAGE;
@@ -46,26 +46,26 @@ function atto_oembed_strings_for_js() {
  */
 function atto_oembed_params_for_js($elementid, $options, $fpoptions) {
 	global $USER, $COURSE;
-	//coursecontext
+	//Coursecontext.
 	$coursecontext=context_course::instance($COURSE->id);	
 	
-	//usercontextid
+	//Usercontextid.
 	$usercontextid=context_user::instance($USER->id)->id;
 	$disabled=false;
 	
-	//config our array of data
+	//Config our array of data.
 	$params = array();
 	$params['usercontextid'] = $usercontextid;
 
-		//If they don't have permission don't show it
+		//If they don't have permission don't show it.
 		if(!has_capability('atto/oembed:visible', $coursecontext) ){
 			$disabled=true;
 		 }
         
-        //add our disabled param
+        //Add our disabled param.
         $params['disabled'] = $disabled;
         
-        //add our default flavor
+        //Add our default flavor.
         $params['defaultflavor'] = get_config('atto_oembed','defaultflavor');
 
     return $params;
