@@ -100,7 +100,7 @@ class oembed {
      * Get the media url from the atto dialog window
      */
     protected function set_params() {
-        $this->text = required_param('text', PARAM_RAW);
+        $this->text = required_param('text', PARAM_URL);
     }
 
     /**
@@ -113,7 +113,7 @@ class oembed {
         $timeout = 15;
         $providers = [];
 
-        $ret = download_file_content($www, null, null, true, 300, 20, false, NULL, false);
+        $ret = download_file_content($www, null, null, true, $timeout, 20, false, NULL, false);
 
         if ($ret->status == '200') {
             $ret = $ret->results;
