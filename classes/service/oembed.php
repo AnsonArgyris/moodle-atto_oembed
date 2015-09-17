@@ -106,12 +106,13 @@ class oembed {
     /**
      * Get the latest providerlist from http://oembed.com/providers.json
      * If connection fails, take local list
+     *
+     * @return space array
      */
     protected function get_providers() {
         $www ='http://oembed.com/providers.json';
 
-        $timeout = 15;
-        $providers = [];
+        $timeout = 15;   
 
         $ret = download_file_content($www, null, null, true, $timeout, 20, false, NULL, false);
 
@@ -121,9 +122,12 @@ class oembed {
             $this->warnings[] = 'Failed to load providers from '.$www.' falling back to local version.';
             $ret = file_get_contents(__DIR__.'/../../providers.json');
         }        
-
         
         $providers = json_decode($ret, true);
+
+        if (!is_array($providers)) {
+            $providers = false;
+        }
         
         if (empty($providers)) {
             throw new \moodle_exception('error:noproviders', 'atto_oembed', '');
@@ -176,7 +180,7 @@ class oembed {
      * Create regular expressions from the providers list to check
      * for supported providers
      *
-     * @param array $scehmes
+     * @param array $schemes
      */
     protected function create_regex_from_scheme(Array $schemes){
 
