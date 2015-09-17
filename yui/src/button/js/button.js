@@ -181,6 +181,11 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
 
         var self = this;
 
+        /**
+         * Process response.
+         *
+         * @param object respobj
+         */
         var process_resp = function (respobj) {
         
             if (!respobj.success) {
