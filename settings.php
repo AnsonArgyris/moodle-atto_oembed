@@ -27,9 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $ADMIN->add('editoratto', new admin_category('atto_oembed', new lang_string('pluginname', 'atto_oembed')));
 
-$settings = new admin_settingpage('atto_oembed_settings', new lang_string('settings', 'atto_oembed'));
+/**$settings = new admin_settingpage('atto_oembed_settings', new lang_string('settings', 'atto_oembed'));
 if ($ADMIN->fulltree) {
 	// An option setting
 	$settings->add(new admin_setting_configtext('atto_oembed/defaultflavor', 
 		get_string('defaultflavor', 'atto_oembed'), '', 'vanilla', PARAM_TEXT));
 }
+*/
