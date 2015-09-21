@@ -227,10 +227,6 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
 
 		usercontextid: {
 			value: null
-		},
-
-		defaultflavor: {
-			value: ''
 		}
 	}
 });
