@@ -65,8 +65,6 @@ function atto_oembed_params_for_js($elementid, $options, $fpoptions) {
         //Add our disabled param.
         $params['disabled'] = $disabled;
         
-        //Add our default flavor.
-        $params['defaultflavor'] = get_config('atto_oembed','defaultflavor');
 
     return $params;
 }
