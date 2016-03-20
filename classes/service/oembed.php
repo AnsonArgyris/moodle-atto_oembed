@@ -50,7 +50,6 @@ class oembed {
      */
     protected function __construct() {
         $this->security();
-        $this->set_params();
         $this->set_providers();
         $this->sites = $this->get_sites();
     }
@@ -63,13 +62,6 @@ class oembed {
         if (!isloggedin()) {
             throw new \moodle_exception('error:notloggedin', 'atto_oembed', '');
         }
-    }
-
-    /**
-     * Get the media url from the atto dialog window
-     */
-    protected function set_params() {
-        $this->text = required_param('text', PARAM_URL);
     }
 
     /**
@@ -118,7 +110,7 @@ class oembed {
     protected function set_providers() {
         $providers = $this->get_cached_providers();
         if (empty($providers)) {
-            $providers = $this->get_providers();
+            $providers = $this->download_providers();
         }
         if (empty($providers)) {
             // OK - we couldn't retrieve the providers via curl, let's hope we have something cached that's usable.
@@ -133,12 +125,12 @@ class oembed {
     }
 
     /**
-     * Get the latest providerlist from http://oembed.com/providers.json
+     * Get the latest provider list from http://oembed.com/providers.json
      * If connection fails, take local list
      *
      * @return space array
      */
-    protected function get_providers() {
+    protected function download_providers() {
         $www ='http://oembed.com/providers.json';
 
         $timeout = 15;   
@@ -291,6 +283,9 @@ class oembed {
                 if (preg_match($regex, $text)) {
                     $url = $site['endpoint'].'?url='.$text.$url2;
                     $jsonret = $this->oembed_curlcall($url);
+                    if (!$jsonret) {
+                        return false;
+                    }
                     return $this->oembed_gethtml($jsonret);
                 }
             }
@@ -303,7 +298,7 @@ class oembed {
      *
      * @return oembed
      */
-    public function get_instance() {
+    public static function get_instance() {
         /** @var $instance oembed */
         static $instance;
         if ($instance) {
