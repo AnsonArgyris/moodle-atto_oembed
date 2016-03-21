@@ -58,9 +58,9 @@ function atto_oembed_params_for_js($elementid, $options, $fpoptions) {
 	$params['usercontextid'] = $usercontextid;
 
 		//If they don't have permission don't show it.
-		if(!has_capability('atto/oembed:visible', $coursecontext) ){
+		/*if(!has_capability('atto/oembed:visible', $coursecontext) ){
 			$disabled=true;
-		 }
+		}*/
         
         //Add our disabled param.
         $params['disabled'] = $disabled;

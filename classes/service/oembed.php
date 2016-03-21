@@ -18,7 +18,7 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  Erich M. Wappis
+ * @copyright  Erich M. Wappis / Guy Thomas
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,16 +31,6 @@ require_once($CFG->libdir.'/filelib.php');
 class oembed {
 
     /**
-     * @var bool
-     */
-    protected $success = false;
-
-    /**
-     * @var string
-     */
-    protected $text = '';
-
-    /**
      * @var array
      */
     protected $warnings = [];
@@ -50,41 +40,19 @@ class oembed {
      */
     protected $providers = [];
 
-    /*
+    /**
      * @var array
      */
     protected $sites = [];
-
-    /**
-     * @var mixed|string
-     */
-    protected $htmloutput = '';
-
-    /**
-     * @var string
-     */
-    protected $providerjson = '';
-
-    /**
-     * @var string
-     */
-    protected $providerurl =  '';
-
 
     /**
      * Constructor - protected singeton.
      */
     protected function __construct() {
         $this->security();
-        $this->set_params();
-        $this->providers = $this->get_providers();
+        $this->set_providers();
         $this->sites = $this->get_sites();
-        $this->htmloutput = $this->html_output($this->sites, $this->text);
-        if (!empty($this->htmloutput)) {
-            $this->success = true;
-        }
     }
-
 
     /**
      * Security checks
@@ -97,19 +65,72 @@ class oembed {
     }
 
     /**
-     * Get the media url from the atto dialog window
+     * Get cached providers
+     *
+     * @param bool $ignorelifespan
+     * @return bool|mixed
+     * @throws \Exception
+     * @throws \dml_exception
      */
-    protected function set_params() {
-        $this->text = required_param('text', PARAM_URL);
+    protected function get_cached_providers($ignorelifespan = false) {
+        $cachelifespan = DAYSECS; // TODO - consider making this a config variable and add to settings.php
+        $config = get_config('atto_oembed');
+
+        // If config is present and cache fresh and available then use it
+        if (!empty($config)) {
+            if (!empty($config->providers_cachestamp) && !empty($config->providers_cached)) {
+                $lastcached = intval($config->providers_cachestamp);
+                if ($ignorelifespan || $lastcached > time() - $cachelifespan) {
+                    // Use cached providers.
+                    $providers = json_decode($config->providers_cached, true);
+                    return $providers;
+                }
+            }
+        }
+        return false;
     }
 
     /**
-     * Get the latest providerlist from http://oembed.com/providers.json
+     * Cache provider json string.
+     *
+     * @param string $json
+     */
+    protected function cache_provider_json($json) {
+        set_config('providers_cached', $json, 'atto_oembed');
+        set_config('providers_cachestamp', time(), 'atto_oembed');
+    }
+
+    /**
+     * Set providers property, retrieve from cache if possible.
+     *
+     * @throws \Exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    protected function set_providers() {
+        $providers = $this->get_cached_providers();
+        if (empty($providers)) {
+            $providers = $this->download_providers();
+        }
+        if (empty($providers)) {
+            // OK - we couldn't retrieve the providers via curl, let's hope we have something cached that's usable.
+            $providers = $this->get_cached_providers(true);
+        }
+        if (empty($providers)) {
+            // Couldn't get anything via curl or from cache, use local static copy.
+            $ret = file_get_contents(__DIR__.'/../../providers.json');
+            $providers = json_decode($ret, true);
+        }
+        $this->providers = $providers;
+    }
+
+    /**
+     * Get the latest provider list from http://oembed.com/providers.json
      * If connection fails, take local list
      *
      * @return space array
      */
-    protected function get_providers() {
+    protected function download_providers() {
         $www ='http://oembed.com/providers.json';
 
         $timeout = 15;   
@@ -119,23 +140,25 @@ class oembed {
         if ($ret->status == '200') {
             $ret = $ret->results;
         } else {
-            $this->warnings[] = 'Failed to load providers from '.$www.' falling back to local version.';
-            $ret = file_get_contents(__DIR__.'/../../providers.json');
-        }        
+            $this->warnings[] = 'Failed to load providers from '.$www;
+            return false;
+        }
         
         $providers = json_decode($ret, true);
 
         if (!is_array($providers)) {
             $providers = false;
         }
-        
+
         if (empty($providers)) {
             throw new \moodle_exception('error:noproviders', 'atto_oembed', '');
         }
+
+        // Cache provider json.
+        $this->cache_provider_json($ret);
               
         return $providers;
     }
-
     
     /**
      * Check if the provided url matches any supported content providers
@@ -148,17 +171,13 @@ class oembed {
 
         foreach ($this->providers as $provider) {
             $providerurl = $provider["provider_url"];
-
             $endpoints = $provider['endpoints'];
             $endpointsarr = $endpoints[0];
             $endpointurl = $endpointsarr['url'];
-
             $endpointurl = str_replace('{format}', 'json', $endpointurl);
 
-
-            // Check if schemes are definded for this provider
-            // If not take the provider url for creating a regex
-
+            // Check if schemes are definded for this provider.
+            // If not take the provider url for creating a regex.
             if (array_key_exists('schemes', $endpointsarr)){
                 $regexschemes = $endpointsarr['schemes'];
             }
@@ -197,9 +216,7 @@ class oembed {
             }
 
             $regex[] = '/(https?:\/\/)'.implode('\/', $regex_array).'/';
-
         }
-
         return $regex;
     }
 
@@ -207,7 +224,7 @@ class oembed {
      * Get the actual json from content provider
      *
      * @param string $www
-     * @return string
+     * @return array
      */
     protected function oembed_curlcall($www) {
         
@@ -221,22 +238,29 @@ class oembed {
     }
 
     /**
+     * @return array
+     */
+    public function get_warnings() {
+        return $this->warnings;
+    }
+
+    /**
      * Get oembed html.
      *
-     * @param string $json
+     * @param array $jsonarr
      * @param string $params
      * @return string
      * @throws \coding_exception
      */
-    protected function oembed_gethtml($json, $params = '') {
+    protected function oembed_gethtml($jsonarr, $params = '') {
 
-        if ($json === null) {
+        if ($jsonarr === null) {
             //return '<h3>'. get_string('connection_error', 'filter_oembed') .'</h3>';
             $this->warnings[] = get_string('connection_error', 'filter_oembed');
             return '';
         }
 
-        $embed = $json['html'];
+        $embed = $jsonarr['html'];
 
         if ($params != ''){
             $embed = str_replace('?feature=oembed', '?feature=oembed'.htmlspecialchars($params), $embed );
@@ -247,19 +271,21 @@ class oembed {
     }
 
     /**
-     * Get html output
+     * Filter text - convert links into oembed code.
      *
-     * @param array $sites
      * @param string $text
      * @return string
      */
-    protected function html_output(Array $sites, $text){
+    public function html_output($text){
         $url2 = '&format=json';
-        foreach ($sites as $site) {
+        foreach ($this->sites as $site) {
             foreach ($site['regex'] as $regex) {
                 if (preg_match($regex, $text)) {
                     $url = $site['endpoint'].'?url='.$text.$url2;
                     $jsonret = $this->oembed_curlcall($url);
+                    if (!$jsonret) {
+                        return false;
+                    }
                     return $this->oembed_gethtml($jsonret);
                 }
             }
@@ -270,9 +296,10 @@ class oembed {
     /**
      * Singleton
      *
-     * @return mixed
+     * @return oembed
      */
-    public function get_instance() {
+    public static function get_instance() {
+        /** @var $instance oembed */
         static $instance;
         if ($instance) {
             return $instance;
@@ -280,32 +307,4 @@ class oembed {
             return new oembed();
         }
     }
-
-    /**
-     * Get output object
-     *
-     * @return object
-     */
-    protected function get_output_obj(){
-        $output = (object) [
-            'success' => $this->success,
-            'warnings' => $this->warnings,
-            'htmloutput' => $this->htmloutput,
-            'providerjson' => $this->providerjson,
-            'providerurl' => $this->providerurl
-        ];
-        return $output;
-    }
-
-    /**
-     * Output json
-     */
-    public function output_json() {
-        $output = $this->get_output_obj();
-        echo json_encode($output);
-        die;
-    }
-
-
-
 }

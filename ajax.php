@@ -31,4 +31,12 @@ use atto_oembed\service\oembed;
 
 $instance = oembed::get_instance();
 
-$instance->output_json();
+$text = required_param('text', PARAM_RAW);
+$html = $instance->html_output($text);
+$success = $html !== false;
+echo json_encode([
+    'htmloutput' => $html,
+    'warnings' => $instance->get_warnings(),
+    'success' => $success
+]);
+die;
