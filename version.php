@@ -18,16 +18,20 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  Erich M. Wappis
+ * @copyright  Erich M. Wappis, Guy Thomas
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015091800;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014051205;	// Requires this Moodle version.
+$plugin->version   = 2017030900;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2016120500;	// Requires this Moodle version.
 $plugin->component = 'atto_oembed';  	// Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_BETA;
-// Human readable version informatiomn
-$plugin->release   = '1.0.1 (Build 2014042800)';
+
+$plugin->release   = '2.0.0 (Build 2017030900)';
+
+$plugin->dependencies = array(
+    'filter_oembed' => 2017050100,
+);
 

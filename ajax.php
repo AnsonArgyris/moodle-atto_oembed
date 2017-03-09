@@ -19,7 +19,7 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  Erich M. Wappis
+ * @copyright  Erich M. Wappis, Guy Thomas
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,16 +27,16 @@ define('AJAX_SCRIPT', true);
 
 require_once(dirname(__FILE__) . '../../../../../../config.php');
 
-use atto_oembed\service\oembed;
+use filter_oembed\service\oembed;
 
 $instance = oembed::get_instance();
 
 $text = required_param('text', PARAM_RAW);
-$html = $instance->html_output($text);
+$html = '<div data-oembed-href="'.$text.'">'.$instance->html_output($text).'</div>';
 $success = $html !== false;
 echo json_encode([
     'htmloutput' => $html,
-    'warnings' => $instance->get_warnings(),
+    //'warnings' => $instance->get_warnings(),
     'success' => $success
 ]);
 die;
