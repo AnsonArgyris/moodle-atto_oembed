@@ -61,13 +61,28 @@ var TEMPLATE = '' +
 
 Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.EditorPlugin, [], {
 
-  
+    context: null,
+
 	/**
      * Initialize the button
      *
      * @method Initializer
      */
     initializer: function() {
+
+        /**
+         * Get context id for current page.
+         * @returns {Number}
+         */
+        var getContext = function() {
+            var bodyclass = Y.one('body').getAttribute('class');
+            var regex = /(?:^|\s)context-\d/;
+            var match = parseInt(regex.exec(bodyclass)[0].replace('context-',''));
+            return match;
+        }
+
+        this.context = getContext();
+
         // If we don't have the capability to view then give up.
         if (this.get('disabled')){
             return;
@@ -132,7 +147,6 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
         this.markUpdated();
     },
 
-
      /**
      * Return the dialogue content for the tool, attaching any required
      * events.
@@ -158,9 +172,6 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
         return content;
     },
 
-    
-
-    
     /**
      * Inserts the users input onto the page
      * @method _getDialogueContent
@@ -178,7 +189,8 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
         var params = {
             sesskey: M.cfg.sesskey,
             action: 'filtertext',
-            text: MEDIAURL.get('value')
+            text: MEDIAURL.get('value'),
+            context: this.context
         };
 
         var self = this;
@@ -189,14 +201,14 @@ Y.namespace('M.atto_oembed').Button = Y.Base.create('button', Y.M.editor_atto.Ed
          * @param object respobj
          */
         var process_resp = function (respobj) {
-        
+
             if (!respobj.success) {
                 // TODO - nice localised error message required.
                 alert ('Failed to do oembed');
             }
 
             self.editor.focus();
-            
+
             self.get('host').insertContentAtFocusPoint(respobj.htmloutput);
             self.markUpdated();
         };
