@@ -29,6 +29,11 @@ require_once(dirname(__FILE__) . '../../../../../../config.php');
 
 use filter_oembed\service\oembed;
 
+global $PAGE;
+
+$context = required_param('context', PARAM_INT);
+$PAGE->set_context(context::instance_by_id($context));
+
 $instance = oembed::get_instance();
 
 $text = required_param('text', PARAM_RAW);
