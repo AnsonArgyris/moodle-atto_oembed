@@ -19,8 +19,10 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  Erich M. Wappis, Guy Thomas
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright Erich M. Wappis / Guy Thomas 2017
+ * @author Erich M. Wappis <erich.wappis@uni-graz.at>
+ * @author Guy Thomas <brudinie@googlemail.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('AJAX_SCRIPT', true);
@@ -41,7 +43,6 @@ $html = '<div data-oembed-href="'.$text.'">'.$instance->html_output($text).'</di
 $success = $html !== false;
 echo json_encode([
     'htmloutput' => $html,
-    //'warnings' => $instance->get_warnings(),
     'success' => $success
 ]);
 die;

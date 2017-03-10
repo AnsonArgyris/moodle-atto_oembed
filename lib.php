@@ -18,8 +18,10 @@
  * Atto text editor integration version file.
  *
  * @package    atto_oembed
- * @copyright  Erich Wappis
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright Erich M. Wappis / Guy Thomas 2017
+ * @author Erich M. Wappis <erich.wappis@uni-graz.at>
+ * @author Guy Thomas <brudinie@googlemail.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -32,12 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 function atto_oembed_strings_for_js() {
     global $PAGE;
 
-    $PAGE->requires->strings_for_js(array('insert',
-                                          'cancel',
-                                          'enterurl',
-                                          'defaulttext',
-                                          'dialogtitle'),
-                                    	  'atto_oembed');
+    $PAGE->requires->strings_for_js(array('insert','cancel','enterurl','defaulttext','dialogtitle'),'atto_oembed');
 }
 
 /**
@@ -47,11 +44,12 @@ function atto_oembed_strings_for_js() {
 function atto_oembed_params_for_js($elementid, $options, $fpoptions) {
 	global $USER, $COURSE;
 	//Coursecontext.
-	$coursecontext=context_course::instance($COURSE->id);	
-	
-	//Usercontextid.
-	$usercontextid=context_user::instance($USER->id)->id;
-	$disabled=false;
+	$coursecontext=context_course::instance($COURSE->id);
+
+    //Usercontextid.
+
+    $usercontextid=context_user::instance($USER->id)->id;
+    $disabled=false;
 	
 	//Config our array of data.
 	$params = array();
