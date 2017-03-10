@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017030900;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016120500;	// Requires this Moodle version.
-$plugin->component = 'atto_oembed';  	// Full name of the plugin (used for diagnostics).
+$plugin->version   = 2017030900;
+$plugin->requires  = 2016120500;
+$plugin->component = 'atto_oembed';
 $plugin->maturity  = MATURITY_BETA;
 
 $plugin->release   = '2.0.0 (Build 2017030900)';
